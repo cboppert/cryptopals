@@ -1,17 +1,31 @@
 -module(converter).
--export([hex_to_bin/1, hex_to_64/1]).
+-export([hex_to_bin/1, bin_to_hex/1, hex_to_64/1]).
 -author("Cody Boppert").
 -date("10/25/16").
+-url("http://cryptopals.com/sets/1/challenges/1").
+-set("One").
+-challenge("One").
 
+% Exports
 hex_to_bin(Hex) ->
    pad_if_needed(integer_to_binary(list_to_integer(Hex, 16), 2)).
+
+bin_to_hex(Bin) ->
+   integer_to_list(binary_to_integer(Bin, 2), 16).
 
 hex_to_64(Hex) ->
    bin_to_64(hex_to_bin(Hex)).
 
+
+% Private for now
 bin_to_64(Bits) when byte_size(Bits) >= 6 ->
       [bits_to_64(binary_part(Bits, 0, 6))|bin_to_64(binary_part(Bits, 6, byte_size(Bits) - 6))];
 bin_to_64(_) -> [].
+
+pad_if_needed(Bits) when byte_size(Bits) rem 4 == 0 -> Bits;
+pad_if_needed(Bits) when byte_size(Bits) rem 4 == 1 -> list_to_binary(["000"|[binary_to_list(Bits)]]);
+pad_if_needed(Bits) when byte_size(Bits) rem 4 == 2 -> list_to_binary(["00"|[binary_to_list(Bits)]]);
+pad_if_needed(Bits) when byte_size(Bits) rem 4 == 3 -> list_to_binary(["0"|[binary_to_list(Bits)]]).
 
 bits_to_64(X) ->
    [H|_T] = case X of
@@ -81,8 +95,3 @@ bits_to_64(X) ->
       <<"111111">> -> "/"
    end,
    H.
-
-pad_if_needed(Bits) when byte_size(Bits) rem 4 == 0 -> Bits;
-pad_if_needed(Bits) when byte_size(Bits) rem 4 == 1 -> list_to_binary(["000"|[binary_to_list(Bits)]]);
-pad_if_needed(Bits) when byte_size(Bits) rem 4 == 2 -> list_to_binary(["00"|[binary_to_list(Bits)]]);
-pad_if_needed(Bits) when byte_size(Bits) rem 4 == 3 -> list_to_binary(["0"|[binary_to_list(Bits)]]).
