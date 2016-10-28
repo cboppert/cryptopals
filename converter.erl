@@ -14,7 +14,7 @@ bin_to_hex(Bin) ->
    integer_to_list(binary_to_integer(Bin, 2), 16).
 
 hex_to_64(Hex) ->
-   bin_to_64(hex_to_bin(Hex)).
+   bitstring_to_list(list_to_bitstring(bin_to_64(hex_to_bin(Hex)))).
 
 
 % Private for now
@@ -28,7 +28,7 @@ pad_if_needed(Bits) when byte_size(Bits) rem 4 == 2 -> list_to_binary(["00"|[bin
 pad_if_needed(Bits) when byte_size(Bits) rem 4 == 3 -> list_to_binary(["0"|[binary_to_list(Bits)]]).
 
 bits_to_64(X) ->
-   [H|_T] = case X of
+   case X of
       <<"000000">> -> "A";
       <<"000001">> -> "B";
       <<"000010">> -> "C";
@@ -93,5 +93,4 @@ bits_to_64(X) ->
       <<"111101">> -> "9";
       <<"111110">> -> "+";
       <<"111111">> -> "/"
-   end,
-   H.
+   end.
